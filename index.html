@@ -291,6 +291,114 @@ body {
 .analysis-card .analysis-type.market { background: rgba(122,170,142,0.15); color: var(--accent-sage); }
 .analysis-card .analysis-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .analysis-card .analysis-meta { margin-top: 14px; display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.analysis-card { cursor: pointer; transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s; }
+.analysis-card:hover { transform: translateY(-2px); }
+.analysis-card .read-more { display: inline-flex; align-items: center; gap: 4px; margin-top: 12px; font-size: 12px; color: var(--accent-copper); font-weight: 500; opacity: 0; transition: opacity 0.2s; }
+.analysis-card:hover .read-more { opacity: 1; }
+
+/* Analysis Detail View */
+.detail-view { max-width: 800px; margin: 0 auto; }
+.detail-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.detail-back:hover {
+  border-color: var(--accent-copper);
+  color: var(--accent-copper);
+}
+.detail-article {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+}
+.detail-article .da-header {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-article .da-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.detail-article .da-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.detail-article .da-type {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.detail-article .da-type.deconstruct { background: rgba(196,122,138,0.15); color: var(--accent-rose); }
+.detail-article .da-type.user { background: rgba(200,149,108,0.15); color: var(--accent-copper); }
+.detail-article .da-type.market { background: rgba(122,170,142,0.15); color: var(--accent-sage); }
+.detail-article .da-tag {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.detail-article .da-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+.detail-article .da-action-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.detail-article .da-action-btn:hover { border-color: var(--accent-copper); color: var(--accent-copper); }
+.detail-article .da-action-btn.delete:hover { border-color: var(--accent-rose); color: var(--accent-rose); }
+.detail-article .da-summary {
+  font-size: 14px;
+  color: var(--accent-amber);
+  line-height: 1.7;
+  padding: 16px 20px;
+  background: rgba(212,168,83,0.06);
+  border-left: 3px solid var(--accent-amber);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 28px;
+}
+.detail-article .da-content {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.detail-article .da-content:empty::before {
+  content: '暂无详细内容';
+  color: var(--text-muted);
+  font-style: italic;
+}
 
 /* Video card */
 .video-card .card-video { width: 100%; aspect-ratio: 16/9; background: #000; border-bottom: 1px solid var(--border); }
@@ -1082,11 +1190,16 @@ body:not(.admin-mode) #fileAvatar {
 
   <!-- Analysis Section -->
   <section class="section" id="sec-analysis">
-    <div class="section-header">
+    <div class="section-header" id="analysisListHeader">
       <div class="section-title"><span class="icon">🔍</span> 拆解&分析 <span class="section-count" id="analysisCount"></span></div>
       <button class="btn-add" onclick="openModal('analysis')">+ 添加分析</button>
     </div>
     <div class="grid-analysis" id="analysisGrid"></div>
+    <!-- Detail View -->
+    <div class="detail-view" id="analysisDetail" style="display:none">
+      <button class="detail-back" onclick="closeAnalysisDetail()">← 返回列表</button>
+      <article class="detail-article" id="analysisDetailContent"></article>
+    </div>
   </section>
 
   <!-- Videos Section -->
@@ -1226,6 +1339,10 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.add('active');
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('sec-' + btn.dataset.section).classList.add('active');
+    // Reset analysis detail view when navigating away
+    if (btn.dataset.section !== 'analysis') {
+      closeAnalysisDetail();
+    }
   });
 });
 
@@ -1417,10 +1534,10 @@ function renderAnalysis() {
     return;
   }
   grid.innerHTML = DATA.analysis.map((a, i) => `
-    <div class="card analysis-card">
+    <div class="card analysis-card" onclick="openAnalysisDetail(${i})">
       <div class="card-actions">
-        <button class="card-action-btn" onclick="editItem('analysis',${i})" title="编辑">✏️</button>
-        <button class="card-action-btn delete" onclick="confirmDelete('analysis',${i})" title="删除">🗑</button>
+        <button class="card-action-btn" onclick="event.stopPropagation();editItem('analysis',${i})" title="编辑">✏️</button>
+        <button class="card-action-btn delete" onclick="event.stopPropagation();confirmDelete('analysis',${i})" title="删除">🗑</button>
       </div>
       <div class="card-body">
         <div class="analysis-title">${esc(a.title)}</div>
@@ -1430,9 +1547,48 @@ function renderAnalysis() {
           ${a.game ? `<span>🎮 ${esc(a.game)}</span>` : ''}
           ${a.date ? `<span>📅 ${esc(a.date)}</span>` : ''}
         </div>
+        <div class="read-more">阅读全文 →</div>
       </div>
     </div>
   `).join('');
+}
+
+// ===== Analysis Detail =====
+function openAnalysisDetail(idx) {
+  const a = DATA.analysis[idx];
+  if (!a) return;
+  const typeLabels = { deconstruct: '游戏拆解', user: '用户分析', market: '市场分析' };
+
+  document.getElementById('analysisDetailContent').innerHTML = `
+    <div class="da-header">
+      <div class="da-title">${esc(a.title)}</div>
+      <div class="da-meta">
+        <span class="da-type ${a.type}">${typeLabels[a.type] || a.type}</span>
+        ${a.game ? `<span class="da-tag">🎮 ${esc(a.game)}</span>` : ''}
+        ${a.date ? `<span class="da-tag">📅 ${esc(a.date)}</span>` : ''}
+        ${isAdmin() ? `
+          <div class="da-actions">
+            <button class="da-action-btn" onclick="editItem('analysis',${idx})" title="编辑">✏️</button>
+            <button class="da-action-btn delete" onclick="confirmDelete('analysis',${idx})" title="删除">🗑</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+    ${a.summary ? `<div class="da-summary">${esc(a.summary)}</div>` : ''}
+    <div class="da-content">${esc(a.content)}</div>
+  `;
+
+  document.getElementById('analysisListHeader').style.display = 'none';
+  document.getElementById('analysisGrid').style.display = 'none';
+  document.getElementById('analysisDetail').style.display = 'block';
+  // Scroll to top of section
+  document.getElementById('sec-analysis').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeAnalysisDetail() {
+  document.getElementById('analysisListHeader').style.display = '';
+  document.getElementById('analysisGrid').style.display = '';
+  document.getElementById('analysisDetail').style.display = 'none';
 }
 
 function renderVideos() {
@@ -1621,7 +1777,8 @@ function openModal(section, idx = -1) {
         </div>
         <div class="form-group"><label class="form-label">关联游戏</label><input class="form-input" id="f_game" value="${esc(item?.game||'')}" placeholder="可选"></div>
       </div>
-      <div class="form-group"><label class="form-label">内容摘要 *</label><textarea class="form-textarea" id="f_summary" rows="6" placeholder="分析的核心结论和要点...">${esc(item?.summary||'')}</textarea></div>
+      <div class="form-group"><label class="form-label">内容摘要 *</label><textarea class="form-textarea" id="f_summary" rows="3" placeholder="分析的核心结论和要点（缩略卡片显示）...">${esc(item?.summary||'')}</textarea></div>
+      <div class="form-group"><label class="form-label">正文内容</label><textarea class="form-textarea" id="f_content" rows="12" placeholder="详细的分析正文，支持换行...">${esc(item?.content||'')}</textarea></div>
       <div class="form-group"><label class="form-label">日期</label><input class="form-input" id="f_date" type="date" value="${item?.date||''}"></div>
     `;
   } else if (section === 'videos') {
@@ -1775,6 +1932,7 @@ function saveItem() {
       type: document.getElementById('f_type').value,
       game: document.getElementById('f_game').value.trim(),
       summary: document.getElementById('f_summary').value.trim(),
+      content: document.getElementById('f_content').value.trim(),
       date: document.getElementById('f_date').value
     };
   } else if (section === 'videos') {

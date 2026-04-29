@@ -28,4 +28,5 @@
   - **成熟专业风格**：铜金/琥珀/石板配色，Inter+JetBrains Mono字体，微妙投影，无glow
   - 支持图片上传(Base64)、B站/YouTube视频嵌入、图片灯箱
   - 首页含简历(头像/技能/联系方式)+工作经历时间线+作品集导航
+  - **管理员权限控制**：访客只读，编辑需密码验证(Header🔒按钮)，SHA-256哈希+sessionStorage会话
   - 仓库：monet-home-dev/portfolio，GitHub Pages已部署
