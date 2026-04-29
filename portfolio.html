@@ -512,6 +512,143 @@ body::before {
 .quicklink-card .ql-desc { font-size: 12px; color: var(--text-muted); }
 .quicklink-card .ql-count { font-family: 'Share Tech Mono', monospace; font-size: 24px; font-weight: 700; color: var(--neon-cyan); margin-top: 8px; }
 
+/* Work Experience Timeline */
+.work-section {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.work-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.work-section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.work-section-title .icon { font-size: 22px; }
+
+.work-timeline {
+  position: relative;
+  padding-left: 28px;
+}
+
+.work-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--neon-cyan), var(--neon-purple), transparent);
+}
+
+.work-item {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.3s;
+}
+
+.work-item:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(0,240,255,0.3);
+  box-shadow: 0 0 20px rgba(0,240,255,0.06);
+}
+
+.work-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 22px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,240,255,0.4);
+  border: 2px solid var(--bg-primary);
+}
+
+.work-item .work-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.work-item:hover .work-actions { opacity: 1; }
+
+.work-item .work-action-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(5,5,16,0.9);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.work-item .work-action-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.work-item .work-action-btn.delete:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
+
+.work-item .work-company {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.work-item .work-role {
+  font-size: 14px;
+  color: var(--neon-pink);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.work-item .work-time {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--neon-cyan);
+  background: rgba(0,240,255,0.1);
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.work-item .work-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.work-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
 /* Home edit button */
 .btn-edit-home {
   display: inline-flex;
@@ -923,9 +1060,10 @@ function loadProfile() {
         { text: 'Python', type: 'tool' },
         { text: 'Blueprint', type: 'tool' },
         { text: '游戏拆解', type: 'other' }
-      ]
+      ],
+      workExperiences: []
     };
-  } catch { return { name: 'Monet', role: '游戏策划', bio: '', avatar: '', email: '', github: '', site: '', skills: [] }; }
+  } catch { return { name: 'Monet', role: '游戏策划', bio: '', avatar: '', email: '', github: '', site: '', skills: [], workExperiences: [] }; }
 }
 
 function saveProfile(profile) {
@@ -954,6 +1092,36 @@ function showToast(msg, type = 'success') {
   t.innerHTML = `<span>${icons[type] || ''}</span> ${msg}`;
   c.appendChild(t);
   setTimeout(() => t.remove(), 2600);
+}
+
+// ===== Render Work Timeline Helper =====
+function renderWorkTimeline(experiences) {
+  if (!experiences || !experiences.length) {
+    return '<div class="work-empty">还没有工作经历，点击右上角添加</div>';
+  }
+  return `<div class="work-timeline">${experiences.map((w, i) => `
+    <div class="work-item">
+      <div class="work-actions">
+        <button class="work-action-btn" onclick="editWork(${i})" title="编辑">✏️</button>
+        <button class="work-action-btn delete" onclick="deleteWork(${i})" title="删除">🗑</button>
+      </div>
+      <div class="work-company">${esc(w.company)}</div>
+      <div class="work-role">${esc(w.position)}</div>
+      <div class="work-time">${esc(w.period)}</div>
+      <div class="work-desc">${esc(w.description)}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function editWork(idx) {
+  openModal('work', idx);
+}
+
+function deleteWork(idx) {
+  deleteTarget = { section: 'workExperiences', idx };
+  const item = PROFILE.workExperiences[idx];
+  document.getElementById('confirmText').textContent = `确定删除「${item.company || ''}」的工作经历？此操作不可撤销。`;
+  document.getElementById('confirmOverlay').classList.add('active');
 }
 
 // ===== Render Home =====
@@ -985,6 +1153,14 @@ function renderHome() {
         ${contactHtml ? `<div class="home-contact">${contactHtml}</div>` : ''}
         ${skillsHtml ? `<div class="home-skills">${skillsHtml}</div>` : ''}
       </div>
+    </div>
+
+    <div class="work-section">
+      <div class="work-section-header">
+        <div class="work-section-title"><span class="icon">💼</span> 工作经历</div>
+        <button class="btn-add" style="padding:8px 16px;font-size:13px" onclick="openModal('work')">+ 添加经历</button>
+      </div>
+      ${renderWorkTimeline(p.workExperiences || [])}
     </div>
 
     <div class="section-header" style="margin-top:16px">
@@ -1220,7 +1396,7 @@ function openModal(section, idx = -1) {
   const isEdit = idx >= 0;
   const item = isEdit ? DATA[section]?.[idx] : null;
 
-  const titles = { games: '游戏履历', analysis: '拆解分析', videos: 'Demo视频', art: 'AI美术', projects: '立项思考', profile: '个人简历' };
+  const titles = { games: '游戏履历', analysis: '拆解分析', videos: 'Demo视频', art: 'AI美术', projects: '立项思考', profile: '个人简历', work: '工作经历' };
   document.getElementById('modalTitle').textContent = (isEdit ? '编辑' : '添加') + (titles[section] || '');
 
   let html = '';
@@ -1249,6 +1425,16 @@ function openModal(section, idx = -1) {
         <div class="form-hint">类型可选: engine / design / art / tool / other</div>
         <textarea class="form-textarea" id="f_skills" rows="6" placeholder="UE4/UE5|engine&#10;系统设计|design&#10;AI美术|art">${(PROFILE.skills||[]).map(s => s.text + '|' + s.type).join('\n')}</textarea>
       </div>
+    `;
+  } else if (section === 'work') {
+    const wItem = isEdit ? PROFILE.workExperiences?.[idx] : null;
+    html = `
+      <div class="form-group"><label class="form-label">公司名称 *</label><input class="form-input" id="f_company" value="${esc(wItem?.company||'')}" placeholder="如：米哈游"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">担任职位 *</label><input class="form-input" id="f_position" value="${esc(wItem?.position||'')}" placeholder="如：系统策划"></div>
+        <div class="form-group"><label class="form-label">在职时间</label><input class="form-input" id="f_period" value="${esc(wItem?.period||'')}" placeholder="如：2024.06 - 至今"></div>
+      </div>
+      <div class="form-group"><label class="form-label">工作内容 *</label><textarea class="form-textarea" id="f_wdesc" rows="6" placeholder="负责的核心工作、参与的项目、主要成果...">${esc(wItem?.description||'')}</textarea></div>
     `;
   } else if (section === 'games') {
     html = `
@@ -1394,6 +1580,30 @@ function saveItem() {
     return;
   }
 
+  // Work experience save
+  if (section === 'work') {
+    const company = document.getElementById('f_company').value.trim();
+    const position = document.getElementById('f_position').value.trim();
+    if (!company || !position) { showToast('请填写公司名称和职位', 'error'); return; }
+    const workItem = {
+      company,
+      position,
+      period: document.getElementById('f_period').value.trim(),
+      description: document.getElementById('f_wdesc').value.trim()
+    };
+    if (!PROFILE.workExperiences) PROFILE.workExperiences = [];
+    if (isEdit) {
+      PROFILE.workExperiences[editIndex] = workItem;
+    } else {
+      PROFILE.workExperiences.unshift(workItem);
+    }
+    saveProfile(PROFILE);
+    renderHome();
+    closeModal();
+    showToast(isEdit ? '工作经历已更新' : '工作经历已添加', 'success');
+    return;
+  }
+
   let item = {};
 
   if (section === 'games') {
@@ -1473,7 +1683,12 @@ function confirmDelete(section, idx) {
 }
 
 document.getElementById('confirmDelete').addEventListener('click', () => {
-  if (deleteTarget.section && deleteTarget.idx >= 0) {
+  if (deleteTarget.section === 'workExperiences' && deleteTarget.idx >= 0) {
+    PROFILE.workExperiences.splice(deleteTarget.idx, 1);
+    saveProfile(PROFILE);
+    renderHome();
+    showToast('已删除', 'info');
+  } else if (deleteTarget.section && deleteTarget.idx >= 0) {
     DATA[deleteTarget.section].splice(deleteTarget.idx, 1);
     saveData(DATA);
     renderAll();
