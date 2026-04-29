@@ -872,7 +872,160 @@ body {
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
 /* Responsive */
+/* Admin Lock Button */
+.admin-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.admin-toggle:hover {
+  border-color: var(--accent-copper);
+  color: var(--accent-copper);
+  background: rgba(200,149,108,0.06);
+}
+.admin-toggle.unlocked {
+  border-color: rgba(200,149,108,0.4);
+  color: var(--accent-copper);
+  background: rgba(200,149,108,0.08);
+}
+
+/* Admin Mode Visibility — hide edit UI for visitors */
+body:not(.admin-mode) .btn-add,
+body:not(.admin-mode) .btn-edit-home,
+body:not(.admin-mode) .card-actions,
+body:not(.admin-mode) .work-actions,
+body:not(.admin-mode) .home-avatar-upload,
+body:not(.admin-mode) .home-avatar-placeholder,
+body:not(.admin-mode) #fileAvatar {
+  display: none !important;
+}
+
+/* Password Modal */
+.pwd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.pwd-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pwd-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  width: 360px;
+  max-width: 90vw;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.pwd-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.pwd-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.pwd-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.pwd-input:focus {
+  border-color: var(--accent-copper);
+}
+.pwd-input.error {
+  border-color: var(--accent-rose);
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60% { transform: translateX(-6px); }
+  40%,80% { transform: translateX(6px); }
+}
+.pwd-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+.pwd-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.pwd-btn-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.pwd-btn-cancel:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+.pwd-btn-confirm {
+  background: var(--accent-copper);
+  color: #fff;
+  border-color: var(--accent-copper);
+}
+.pwd-btn-confirm:hover {
+  filter: brightness(1.1);
+}
+.pwd-error {
+  color: var(--accent-rose);
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+/* Set Password (first time) */
+.pwd-set-hint {
+  background: rgba(212,168,83,0.08);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--accent-amber);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
+  .admin-toggle { width: 32px; height: 32px; font-size: 14px; }
+  .pwd-box { padding: 24px; }
   .header { padding: 0 16px; height: auto; flex-direction: column; padding: 12px 16px; gap: 8px; }
   .nav { width: 100%; justify-content: flex-start; }
   .main { padding: 16px; }
@@ -906,6 +1059,7 @@ body {
     <button class="nav-btn" data-section="art"><span class="dot" style="background:var(--accent-amber)"></span>AI美术</button>
     <button class="nav-btn" data-section="projects"><span class="dot" style="background:var(--accent-warm)"></span>立项思考</button>
   </nav>
+  <button class="admin-toggle" id="adminToggle" title="管理员模式">🔒</button>
 </header>
 
 <!-- Main -->
@@ -992,6 +1146,23 @@ body {
     <div class="confirm-btns">
       <button class="btn-cancel" onclick="closeConfirm()">取消</button>
       <button class="btn-danger" id="confirmDelete">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Modal -->
+<div class="pwd-overlay" id="pwdOverlay">
+  <div class="pwd-box">
+    <div class="pwd-title" id="pwdTitle">🔒 管理员验证</div>
+    <div class="pwd-desc" id="pwdDesc">输入管理员密码以进入编辑模式</div>
+    <input type="password" class="pwd-input" id="pwdInput" placeholder="输入密码" autocomplete="off">
+    <div class="pwd-error" id="pwdError"></div>
+    <div class="pwd-set-hint" id="pwdSetHint" style="display:none">
+      ⚠️ 这是首次设置管理员密码。请牢记此密码，设置后无法直接查看（可重置）。密码将存储在当前浏览器中。
+    </div>
+    <div class="pwd-actions">
+      <button class="pwd-btn pwd-btn-cancel" onclick="closePwdModal()">取消</button>
+      <button class="pwd-btn pwd-btn-confirm" id="pwdConfirm" onclick="submitPwd()">确认</button>
     </div>
   </div>
 </div>
@@ -1089,10 +1260,12 @@ function renderWorkTimeline(experiences) {
 }
 
 function editWork(idx) {
+  if (!isAdmin()) return;
   openModal('work', idx);
 }
 
 function deleteWork(idx) {
+  if (!isAdmin()) return;
   deleteTarget = { section: 'workExperiences', idx };
   const item = PROFILE.workExperiences[idx];
   document.getElementById('confirmText').textContent = `确定删除「${item.company || ''}」的工作经历？此操作不可撤销。`;
@@ -1185,6 +1358,7 @@ function switchTo(section) {
 }
 
 function handleAvatarUpload(input) {
+  if (!isAdmin()) return;
   const file = input.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) { showToast('图片大小不能超过5MB', 'error'); return; }
@@ -1364,6 +1538,7 @@ let editIndex = -1;
 let tempImage = '';
 
 function openModal(section, idx = -1) {
+  if (!isAdmin()) { showToast('请先进入管理员模式', 'error'); return; }
   currentSection = section;
   editIndex = idx;
   tempImage = '';
@@ -1644,12 +1819,13 @@ function saveItem() {
   showToast(isEdit ? '已更新' : '已添加', 'success');
 }
 
-function editItem(section, idx) { openModal(section, idx); }
+function editItem(section, idx) { if (!isAdmin()) return; openModal(section, idx); }
 
 // ===== Delete =====
 let deleteTarget = { section: '', idx: -1 };
 
 function confirmDelete(section, idx) {
+  if (!isAdmin()) return;
   deleteTarget = { section, idx };
   const item = DATA[section][idx];
   const name = item.name || item.title || '';
@@ -1700,8 +1876,120 @@ document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e
 document.getElementById('confirmOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeConfirm(); });
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeModal(); closeConfirm(); closeLightbox(); }
+  if (e.key === 'Escape') { closeModal(); closeConfirm(); closeLightbox(); closePwdModal(); }
 });
+
+// ===== Admin Access Control =====
+const ADMIN_KEY = 'monet_admin_hash';
+
+function isAdmin() {
+  return sessionStorage.getItem('admin_unlocked') === 'true';
+}
+
+function hasPasswordSet() {
+  return !!localStorage.getItem(ADMIN_KEY);
+}
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function enterAdminMode() {
+  sessionStorage.setItem('admin_unlocked', 'true');
+  document.body.classList.add('admin-mode');
+  const btn = document.getElementById('adminToggle');
+  btn.textContent = '🔓';
+  btn.title = '退出管理员模式';
+  btn.classList.add('unlocked');
+}
+
+function exitAdminMode() {
+  sessionStorage.removeItem('admin_unlocked');
+  document.body.classList.remove('admin-mode');
+  const btn = document.getElementById('adminToggle');
+  btn.textContent = '🔒';
+  btn.title = '管理员模式';
+  btn.classList.remove('unlocked');
+}
+
+function openPwdModal() {
+  const isFirst = !hasPasswordSet();
+  document.getElementById('pwdTitle').textContent = isFirst ? '🔐 设置管理员密码' : '🔒 管理员验证';
+  document.getElementById('pwdDesc').textContent = isFirst ? '首次使用，请设置管理员密码' : '输入管理员密码以进入编辑模式';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdError').textContent = '';
+  document.getElementById('pwdInput').classList.remove('error');
+  document.getElementById('pwdSetHint').style.display = isFirst ? 'block' : 'none';
+  document.getElementById('pwdConfirm').textContent = isFirst ? '设置密码' : '确认';
+  document.getElementById('pwdOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+function closePwdModal() {
+  document.getElementById('pwdOverlay').classList.remove('active');
+}
+
+async function submitPwd() {
+  const pwd = document.getElementById('pwdInput').value;
+  if (!pwd) {
+    document.getElementById('pwdError').textContent = '请输入密码';
+    document.getElementById('pwdInput').classList.add('error');
+    return;
+  }
+  if (pwd.length < 4) {
+    document.getElementById('pwdError').textContent = '密码至少4位';
+    document.getElementById('pwdInput').classList.add('error');
+    return;
+  }
+
+  const hash = await sha256(pwd);
+
+  if (!hasPasswordSet()) {
+    // First time — set password
+    localStorage.setItem(ADMIN_KEY, hash);
+    enterAdminMode();
+    closePwdModal();
+    showToast('管理员密码已设置，编辑模式已开启', 'success');
+    return;
+  }
+
+  // Verify
+  if (hash === localStorage.getItem(ADMIN_KEY)) {
+    enterAdminMode();
+    closePwdModal();
+    showToast('已进入编辑模式', 'success');
+  } else {
+    document.getElementById('pwdError').textContent = '密码错误';
+    document.getElementById('pwdInput').classList.add('error');
+    setTimeout(() => document.getElementById('pwdInput').classList.remove('error'), 500);
+  }
+}
+
+// Admin toggle button
+document.getElementById('adminToggle').addEventListener('click', () => {
+  if (isAdmin()) {
+    exitAdminMode();
+    showToast('已退出编辑模式', 'info');
+  } else {
+    openPwdModal();
+  }
+});
+
+// Password input Enter key
+document.getElementById('pwdInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitPwd();
+});
+
+// Close pwd modal on overlay click
+document.getElementById('pwdOverlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closePwdModal();
+});
+
+// Restore admin session on page load
+if (isAdmin()) {
+  enterAdminMode();
+}
 
 // ===== Init =====
 renderAll();
