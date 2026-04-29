@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monet's Portfolio — 游戏策划作品集</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg-primary: #050510;
+  --bg-secondary: #0a0a1a;
+  --bg-card: #0d0d20;
+  --bg-card-hover: #12122e;
+  --border: #1a1a40;
+  --border-glow: #00f0ff33;
+  --text-primary: #e0f0ff;
+  --text-secondary: #7890b0;
+  --text-muted: #3d5070;
+  --neon-pink: #ff2d78;
+  --neon-cyan: #00f0ff;
+  --neon-purple: #b030ff;
+  --neon-yellow: #ffe040;
+  --neon-green: #00ff88;
+  --neon-orange: #ff8800;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,240,255,0.015) 2px, rgba(0,240,255,0.015) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 3px; }
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(5,5,16,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover {
+  color: var(--text-primary);
+  background: rgba(0,240,255,0.05);
+  border-color: var(--border);
+}
+
+.nav-btn.active {
+  color: var(--neon-cyan);
+  background: rgba(0,240,255,0.1);
+  border-color: rgba(0,240,255,0.3);
+  box-shadow: 0 0 15px rgba(0,240,255,0.1);
+}
+
+.nav-btn .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Main */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title .icon {
+  font-size: 28px;
+}
+
+.section-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--neon-cyan), #0088cc);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.btn-add:hover {
+  box-shadow: 0 0 25px rgba(0,240,255,0.4);
+  transform: translateY(-1px);
+}
+
+/* Grid layouts */
+.grid-games { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.grid-analysis { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+.grid-video { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+.grid-art { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+
+/* Card base */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(0,240,255,0.3);
+  box-shadow: 0 0 30px rgba(0,240,255,0.08);
+  transform: translateY(-2px);
+}
+
+.card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 5;
+}
+
+.card:hover .card-actions {
+  opacity: 1;
+}
+
+.card-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(5,5,16,0.9);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.card-action-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.card-action-btn.delete:hover {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+}
+
+/* Game card */
+.game-card .card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border);
+}
+
+.game-card .card-img-placeholder {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #0d0d20, #1a1a40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  border-bottom: 1px solid var(--border);
+}
+
+.game-card .card-body {
+  padding: 16px;
+}
+
+.game-card .game-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-card .game-hours {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--neon-cyan);
+  background: rgba(0,240,255,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.game-card .game-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(176,48,255,0.15);
+  color: var(--neon-purple);
+  border: 1px solid rgba(176,48,255,0.2);
+}
+
+.tag.genre { background: rgba(0,255,136,0.1); color: var(--neon-green); border-color: rgba(0,255,136,0.2); }
+.tag.platform { background: rgba(255,224,64,0.1); color: var(--neon-yellow); border-color: rgba(255,224,64,0.2); }
+
+.game-card .game-note {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 10px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Analysis card */
+.analysis-card .card-body {
+  padding: 20px;
+}
+
+.analysis-card .analysis-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.analysis-card .analysis-type {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.analysis-card .analysis-type.deconstruct {
+  background: rgba(255,45,120,0.15);
+  color: var(--neon-pink);
+}
+
+.analysis-card .analysis-type.user {
+  background: rgba(0,240,255,0.15);
+  color: var(--neon-cyan);
+}
+
+.analysis-card .analysis-type.market {
+  background: rgba(0,255,136,0.15);
+  color: var(--neon-green);
+}
+
+.analysis-card .analysis-summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.analysis-card .analysis-meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Video card */
+.video-card .card-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-bottom: 1px solid var(--border);
+}
+
+.video-card .card-video iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-card .card-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.video-card .video-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #0d0d20, #1a1a40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  border-bottom: 1px solid var(--border);
+}
+
+.video-card .card-body {
+  padding: 16px;
+}
+
+.video-card .video-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.video-card .video-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Art card */
+.art-card .card-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.art-card .card-img:hover {
+  transform: scale(1.02);
+}
+
+.art-card .card-img-placeholder {
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(135deg, #0d0d20, #1a1a40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.art-card .card-body {
+  padding: 14px;
+}
+
+.art-card .art-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.art-card .art-prompt {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.art-card .art-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* Project card */
+.project-card .card-body {
+  padding: 20px;
+}
+
+.project-card .project-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-card .project-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.project-card .project-status.idea { background: rgba(255,224,64,0.15); color: var(--neon-yellow); }
+.project-card .project-status.prototype { background: rgba(0,240,255,0.15); color: var(--neon-cyan); }
+.project-card .project-status.dev { background: rgba(0,255,136,0.15); color: var(--neon-green); }
+.project-card .project-status.shelve { background: rgba(176,48,255,0.15); color: var(--neon-purple); }
+
+.project-card .project-content {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-card .project-meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state .empty-text {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.empty-state .empty-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 60px rgba(0,240,255,0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  outline: none;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,240,255,0.1);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.form-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.form-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.img-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.img-upload-area:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0,240,255,0.03);
+}
+
+.img-upload-area .upload-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.img-upload-area .upload-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.img-upload-area .preview-img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-upload-area input[type="file"] {
+  display: none;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.btn-save {
+  background: linear-gradient(135deg, var(--neon-cyan), #0088cc);
+  color: #000;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.btn-save:hover {
+  box-shadow: 0 0 20px rgba(0,240,255,0.4);
+}
+
+/* Image lightbox */
+.lightbox {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.lightbox.active {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Confirm dialog */
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1500;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-overlay.active {
+  display: flex;
+}
+
+.confirm-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--neon-pink);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255,45,120,0.15);
+}
+
+.confirm-box .confirm-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.confirm-box .confirm-text {
+  font-size: 15px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.confirm-box .confirm-btns {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--neon-pink), #cc0040);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.btn-danger:hover {
+  box-shadow: 0 0 20px rgba(255,45,120,0.4);
+}
+
+/* Toast */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 32px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  font-size: 14px;
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.2s forwards;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast.success { border-left: 3px solid var(--neon-green); }
+.toast.error { border-left: 3px solid var(--neon-pink); }
+.toast.info { border-left: 3px solid var(--neon-cyan); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+    height: auto;
+    flex-direction: column;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  .nav { width: 100%; justify-content: flex-start; }
+  .main { padding: 16px; }
+  .grid-games { grid-template-columns: 1fr; }
+  .grid-analysis { grid-template-columns: 1fr; }
+  .grid-video { grid-template-columns: 1fr; }
+  .grid-art { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .stats-bar { flex-wrap: wrap; gap: 12px; }
+  .stat-item { min-width: 80px; }
+  .section-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .form-row { flex-direction: column; gap: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo">MONET.PORTFOLIO</div>
+  <nav class="nav" id="nav">
+    <button class="nav-btn active" data-section="games"><span class="dot" style="background:var(--neon-cyan)"></span>游戏履历</button>
+    <button class="nav-btn" data-section="analysis"><span class="dot" style="background:var(--neon-pink)"></span>拆解&分析</button>
+    <button class="nav-btn" data-section="videos"><span class="dot" style="background:var(--neon-green)"></span>Demo视频</button>
+    <button class="nav-btn" data-section="art"><span class="dot" style="background:var(--neon-yellow)"></span>AI美术</button>
+    <button class="nav-btn" data-section="projects"><span class="dot" style="background:var(--neon-purple)"></span>立项思考</button>
+  </nav>
+</header>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Stats -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-item"><div class="stat-value" id="statGames">0</div><div class="stat-label">游戏履历</div></div>
+    <div class="stat-item"><div class="stat-value" id="statHours">0</div><div class="stat-label">总时长(h)</div></div>
+    <div class="stat-item"><div class="stat-value" id="statAnalysis">0</div><div class="stat-label">拆解分析</div></div>
+    <div class="stat-item"><div class="stat-value" id="statVideos">0</div><div class="stat-label">Demo视频</div></div>
+    <div class="stat-item"><div class="stat-value" id="statArt">0</div><div class="stat-label">AI美术</div></div>
+    <div class="stat-item"><div class="stat-value" id="statProjects">0</div><div class="stat-label">立项思考</div></div>
+  </div>
+
+  <!-- Games Section -->
+  <section class="section active" id="sec-games">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">🎮</span> 游戏履历 <span class="section-count" id="gamesCount"></span></div>
+      <button class="btn-add" onclick="openModal('games')">+ 添加游戏</button>
+    </div>
+    <div class="grid-games" id="gamesGrid"></div>
+  </section>
+
+  <!-- Analysis Section -->
+  <section class="section" id="sec-analysis">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">🔍</span> 拆解&分析 <span class="section-count" id="analysisCount"></span></div>
+      <button class="btn-add" onclick="openModal('analysis')">+ 添加分析</button>
+    </div>
+    <div class="grid-analysis" id="analysisGrid"></div>
+  </section>
+
+  <!-- Videos Section -->
+  <section class="section" id="sec-videos">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">🎬</span> Demo视频 <span class="section-count" id="videosCount"></span></div>
+      <button class="btn-add" onclick="openModal('videos')">+ 添加视频</button>
+    </div>
+    <div class="grid-video" id="videosGrid"></div>
+  </section>
+
+  <!-- Art Section -->
+  <section class="section" id="sec-art">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">🎨</span> AI美术素材 <span class="section-count" id="artCount"></span></div>
+      <button class="btn-add" onclick="openModal('art')">+ 添加素材</button>
+    </div>
+    <div class="grid-art" id="artGrid"></div>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="section" id="sec-projects">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">💡</span> 立项思考 <span class="section-count" id="projectsCount"></span></div>
+      <button class="btn-add" onclick="openModal('projects')">+ 添加思考</button>
+    </div>
+    <div class="grid-analysis" id="projectsGrid"></div>
+  </section>
+
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">添加</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" id="btnSave" onclick="saveItem()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- Confirm -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-text" id="confirmText">确定删除？</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeConfirm()">取消</button>
+      <button class="btn-danger" id="confirmDelete">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ===== Data Layer =====
+const STORAGE_KEY = 'monet_portfolio';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { games: [], analysis: [], videos: [], art: [], projects: [] };
+  } catch { return { games: [], analysis: [], videos: [], art: [], projects: [] }; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let DATA = loadData();
+
+// ===== Navigation =====
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + btn.dataset.section).classList.add('active');
+  });
+});
+
+// ===== Toast =====
+function showToast(msg, type = 'success') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  t.innerHTML = `<span>${icons[type] || ''}</span> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+// ===== Stats =====
+function updateStats() {
+  document.getElementById('statGames').textContent = DATA.games.length;
+  document.getElementById('statHours').textContent = DATA.games.reduce((s, g) => s + (parseFloat(g.hours) || 0), 0);
+  document.getElementById('statAnalysis').textContent = DATA.analysis.length;
+  document.getElementById('statVideos').textContent = DATA.videos.length;
+  document.getElementById('statArt').textContent = DATA.art.length;
+  document.getElementById('statProjects').textContent = DATA.projects.length;
+}
+
+// ===== Render =====
+function renderGames() {
+  const grid = document.getElementById('gamesGrid');
+  document.getElementById('gamesCount').textContent = DATA.games.length ? `(${DATA.games.length})` : '';
+  if (!DATA.games.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🎮</div><div class="empty-text">还没有游戏履历</div><div class="empty-hint">点击右上角添加你玩过的游戏</div></div>';
+    return;
+  }
+  grid.innerHTML = DATA.games.map((g, i) => `
+    <div class="card game-card">
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editItem('games',${i})" title="编辑">✏️</button>
+        <button class="card-action-btn delete" onclick="confirmDelete('games',${i})" title="删除">🗑</button>
+      </div>
+      ${g.image ? `<img class="card-img" src="${g.image}" alt="${g.name}" loading="lazy">` : `<div class="card-img-placeholder">🎮</div>`}
+      <div class="card-body">
+        <div class="game-name"><span>${esc(g.name)}</span><span class="game-hours">${g.hours}h</span></div>
+        <div class="game-tags">
+          ${g.genre ? `<span class="tag genre">${esc(g.genre)}</span>` : ''}
+          ${(g.platforms||'').split(',').filter(Boolean).map(p => `<span class="tag platform">${esc(p.trim())}</span>`).join('')}
+        </div>
+        ${g.note ? `<div class="game-note">${esc(g.note)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAnalysis() {
+  const grid = document.getElementById('analysisGrid');
+  document.getElementById('analysisCount').textContent = DATA.analysis.length ? `(${DATA.analysis.length})` : '';
+  if (!DATA.analysis.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">还没有拆解分析</div><div class="empty-hint">添加游戏拆解、用户分析或市场分析</div></div>';
+    return;
+  }
+  grid.innerHTML = DATA.analysis.map((a, i) => `
+    <div class="card analysis-card">
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editItem('analysis',${i})" title="编辑">✏️</button>
+        <button class="card-action-btn delete" onclick="confirmDelete('analysis',${i})" title="删除">🗑</button>
+      </div>
+      <div class="card-body">
+        <div class="analysis-title">${esc(a.title)}</div>
+        <span class="analysis-type ${a.type}">${a.type==='deconstruct'?'游戏拆解':a.type==='user'?'用户分析':'市场分析'}</span>
+        <div class="analysis-summary">${esc(a.summary)}</div>
+        <div class="analysis-meta">
+          ${a.game ? `<span>🎮 ${esc(a.game)}</span>` : ''}
+          ${a.date ? `<span>📅 ${esc(a.date)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderVideos() {
+  const grid = document.getElementById('videosGrid');
+  document.getElementById('videosCount').textContent = DATA.videos.length ? `(${DATA.videos.length})` : '';
+  if (!DATA.videos.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-text">还没有Demo视频</div><div class="empty-hint">嵌入B站/YouTube链接或上传视频</div></div>';
+    return;
+  }
+  grid.innerHTML = DATA.videos.map((v, i) => {
+    let videoHtml = '<div class="video-placeholder">🎬</div>';
+    if (v.url && v.url.includes('bilibili')) {
+      const bvMatch = v.url.match(/BV[\w]+/);
+      if (bvMatch) videoHtml = `<div class="card-video"><iframe src="https://player.bilibili.com/player.html?bvid=${bvMatch[0]}&autoplay=0" allowfullscreen></iframe></div>`;
+    } else if (v.url && (v.url.includes('youtube.com') || v.url.includes('youtu.be'))) {
+      let vid = '';
+      const m1 = v.url.match(/[?&]v=([\w-]+)/);
+      const m2 = v.url.match(/youtu\.be\/([\w-]+)/);
+      if (m1) vid = m1[1]; else if (m2) vid = m2[1];
+      if (vid) videoHtml = `<div class="card-video"><iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe></div>`;
+    } else if (v.url) {
+      videoHtml = `<div class="card-video"><video src="${v.url}" controls></video></div>`;
+    }
+    return `
+      <div class="card video-card">
+        <div class="card-actions">
+          <button class="card-action-btn" onclick="editItem('videos',${i})" title="编辑">✏️</button>
+          <button class="card-action-btn delete" onclick="confirmDelete('videos',${i})" title="删除">🗑</button>
+        </div>
+        ${videoHtml}
+        <div class="card-body">
+          <div class="video-title">${esc(v.title)}</div>
+          ${v.desc ? `<div class="video-desc">${esc(v.desc)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderArt() {
+  const grid = document.getElementById('artGrid');
+  document.getElementById('artCount').textContent = DATA.art.length ? `(${DATA.art.length})` : '';
+  if (!DATA.art.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🎨</div><div class="empty-text">还没有AI美术素材</div><div class="empty-hint">上传你的AI生成作品</div></div>';
+    return;
+  }
+  grid.innerHTML = DATA.art.map((a, i) => `
+    <div class="card art-card">
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editItem('art',${i})" title="编辑">✏️</button>
+        <button class="card-action-btn delete" onclick="confirmDelete('art',${i})" title="删除">🗑</button>
+      </div>
+      ${a.image ? `<img class="card-img" src="${a.image}" alt="${esc(a.title)}" onclick="openLightbox('${a.image.replace(/'/g, "\\'")}')" loading="lazy">` : `<div class="card-img-placeholder">🎨</div>`}
+      <div class="card-body">
+        <div class="art-title">${esc(a.title)}</div>
+        ${a.prompt ? `<div class="art-prompt">${esc(a.prompt)}</div>` : ''}
+        <div class="art-tags">
+          ${a.tool ? `<span class="tag">${esc(a.tool)}</span>` : ''}
+          ${a.style ? `<span class="tag genre">${esc(a.style)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  document.getElementById('projectsCount').textContent = DATA.projects.length ? `(${DATA.projects.length})` : '';
+  if (!DATA.projects.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">💡</div><div class="empty-text">还没有立项思考</div><div class="empty-hint">记录你的游戏立项想法和思考</div></div>';
+    return;
+  }
+  grid.innerHTML = DATA.projects.map((p, i) => `
+    <div class="card project-card">
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editItem('projects',${i})" title="编辑">✏️</button>
+        <button class="card-action-btn delete" onclick="confirmDelete('projects',${i})" title="删除">🗑</button>
+      </div>
+      <div class="card-body">
+        <div class="project-title"><span>${esc(p.title)}</span><span class="project-status ${p.status}">${{idea:'灵感',prototype:'原型',dev:'开发中',shelve:'搁置'}[p.status]||p.status}</span></div>
+        <div class="project-content">${esc(p.content)}</div>
+        <div class="project-meta">
+          ${p.date ? `<span>📅 ${esc(p.date)}</span>` : ''}
+          ${p.genre ? `<span>🎮 ${esc(p.genre)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAll() {
+  renderGames();
+  renderAnalysis();
+  renderVideos();
+  renderArt();
+  renderProjects();
+  updateStats();
+}
+
+// ===== Modal =====
+let currentSection = '';
+let editIndex = -1;
+let tempImage = '';
+
+function openModal(section, idx = -1) {
+  currentSection = section;
+  editIndex = idx;
+  tempImage = '';
+
+  const isEdit = idx >= 0;
+  const item = isEdit ? DATA[section][idx] : null;
+
+  const titles = { games: '游戏履历', analysis: '拆解分析', videos: 'Demo视频', art: 'AI美术', projects: '立项思考' };
+  document.getElementById('modalTitle').textContent = (isEdit ? '编辑' : '添加') + titles[section];
+
+  let html = '';
+
+  if (section === 'games') {
+    html = `
+      <div class="form-group">
+        <label class="form-label">游戏封面</label>
+        <div class="img-upload-area" onclick="document.getElementById('fileGames').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">点击上传图片</div>
+          ${item?.image ? `<img class="preview-img" id="previewGames" src="${item.image}">` : '<img class="preview-img" id="previewGames" style="display:none">' }
+          <input type="file" id="fileGames" accept="image/*" onchange="handleImageUpload(this,'previewGames')">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">游戏名称 *</label><input class="form-input" id="f_name" value="${esc(item?.name||'')}" placeholder="如：艾尔登法环"></div>
+        <div class="form-group"><label class="form-label">游玩时长(h)</label><input class="form-input" id="f_hours" type="number" value="${item?.hours||''}" placeholder="如：200"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">游戏类型</label><input class="form-input" id="f_genre" value="${esc(item?.genre||'')}" placeholder="如：ARPG"></div>
+        <div class="form-group"><label class="form-label">平台(逗号分隔)</label><input class="form-input" id="f_platforms" value="${esc(item?.platforms||'')}" placeholder="如：PC,PS5,Switch"></div>
+      </div>
+      <div class="form-group"><label class="form-label">感想/备注</label><textarea class="form-textarea" id="f_note" placeholder="对这款游戏的个人感受...">${esc(item?.note||'')}</textarea></div>
+    `;
+  } else if (section === 'analysis') {
+    html = `
+      <div class="form-group"><label class="form-label">标题 *</label><input class="form-input" id="f_title" value="${esc(item?.title||'')}" placeholder="如：《原神》核心循环拆解"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">类型</label>
+          <select class="form-select" id="f_type">
+            <option value="deconstruct" ${item?.type==='deconstruct'?'selected':''}>游戏拆解</option>
+            <option value="user" ${item?.type==='user'?'selected':''}>用户分析</option>
+            <option value="market" ${item?.type==='market'?'selected':''}>市场分析</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">关联游戏</label><input class="form-input" id="f_game" value="${esc(item?.game||'')}" placeholder="可选"></div>
+      </div>
+      <div class="form-group"><label class="form-label">内容摘要 *</label><textarea class="form-textarea" id="f_summary" rows="6" placeholder="分析的核心结论和要点...">${esc(item?.summary||'')}</textarea></div>
+      <div class="form-group"><label class="form-label">日期</label><input class="form-input" id="f_date" type="date" value="${item?.date||''}"></div>
+    `;
+  } else if (section === 'videos') {
+    html = `
+      <div class="form-group"><label class="form-label">视频标题 *</label><input class="form-input" id="f_title" value="${esc(item?.title||'')}" placeholder="如：战棋Demo v0.2"></div>
+      <div class="form-group">
+        <label class="form-label">视频链接</label>
+        <input class="form-input" id="f_url" value="${esc(item?.url||'')}" placeholder="B站/YouTube链接 或 视频/图片URL">
+        <div class="form-hint">支持B站BV号链接、YouTube链接或直链视频</div>
+      </div>
+      <div class="form-group"><label class="form-label">描述</label><textarea class="form-textarea" id="f_desc" placeholder="视频内容简介...">${esc(item?.desc||'')}</textarea></div>
+    `;
+  } else if (section === 'art') {
+    html = `
+      <div class="form-group">
+        <label class="form-label">作品图片</label>
+        <div class="img-upload-area" onclick="document.getElementById('fileArt').click()">
+          <div class="upload-icon">🎨</div>
+          <div class="upload-text">点击上传图片</div>
+          ${item?.image ? `<img class="preview-img" id="previewArt" src="${item.image}">` : '<img class="preview-img" id="previewArt" style="display:none">' }
+          <input type="file" id="fileArt" accept="image/*" onchange="handleImageUpload(this,'previewArt')">
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">作品名称 *</label><input class="form-input" id="f_title" value="${esc(item?.title||'')}" placeholder="如：赛博朋克街道"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">AI工具</label><input class="form-input" id="f_tool" value="${esc(item?.tool||'')}" placeholder="如：Midjourney / SD"></div>
+        <div class="form-group"><label class="form-label">风格标签</label><input class="form-input" id="f_style" value="${esc(item?.style||'')}" placeholder="如：赛博朋克"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Prompt</label><textarea class="form-textarea" id="f_prompt" rows="3" placeholder="生成此图的提示词...">${esc(item?.prompt||'')}</textarea></div>
+    `;
+  } else if (section === 'projects') {
+    html = `
+      <div class="form-group"><label class="form-label">项目名称 *</label><input class="form-input" id="f_title" value="${esc(item?.title||'')}" placeholder="如：废土生存建造"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">状态</label>
+          <select class="form-select" id="f_status">
+            <option value="idea" ${item?.status==='idea'?'selected':''}>💡 灵感</option>
+            <option value="prototype" ${item?.status==='prototype'?'selected':''}>🧪 原型</option>
+            <option value="dev" ${item?.status==='dev'?'selected':''}>🚀 开发中</option>
+            <option value="shelve" ${item?.status==='shelve'?'selected':''}>📦 搁置</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">游戏类型</label><input class="form-input" id="f_genre" value="${esc(item?.genre||'')}" placeholder="如：Survival Craft"></div>
+      </div>
+      <div class="form-group"><label class="form-label">立项思考 *</label><textarea class="form-textarea" id="f_content" rows="8" placeholder="核心玩法、差异化、目标用户、市场机会...">${esc(item?.content||'')}</textarea></div>
+      <div class="form-group"><label class="form-label">日期</label><input class="form-input" id="f_date" type="date" value="${item?.date||''}"></div>
+    `;
+  }
+
+  document.getElementById('modalBody').innerHTML = html;
+
+  // Pre-fill tempImage for edit mode
+  if (isEdit && (section === 'games' || section === 'art') && item?.image) {
+    tempImage = item.image;
+  }
+
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  currentSection = '';
+  editIndex = -1;
+  tempImage = '';
+}
+
+function handleImageUpload(input, previewId) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('图片大小不能超过5MB', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    tempImage = e.target.result;
+    const preview = document.getElementById(previewId);
+    preview.src = tempImage;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveItem() {
+  const section = currentSection;
+  const isEdit = editIndex >= 0;
+  let item = {};
+
+  if (section === 'games') {
+    const name = document.getElementById('f_name').value.trim();
+    if (!name) { showToast('请填写游戏名称', 'error'); return; }
+    item = {
+      name,
+      hours: document.getElementById('f_hours').value || '0',
+      genre: document.getElementById('f_genre').value.trim(),
+      platforms: document.getElementById('f_platforms').value.trim(),
+      note: document.getElementById('f_note').value.trim(),
+      image: tempImage || (isEdit ? DATA[section][editIndex].image : '')
+    };
+  } else if (section === 'analysis') {
+    const title = document.getElementById('f_title').value.trim();
+    if (!title) { showToast('请填写标题', 'error'); return; }
+    item = {
+      title,
+      type: document.getElementById('f_type').value,
+      game: document.getElementById('f_game').value.trim(),
+      summary: document.getElementById('f_summary').value.trim(),
+      date: document.getElementById('f_date').value
+    };
+  } else if (section === 'videos') {
+    const title = document.getElementById('f_title').value.trim();
+    if (!title) { showToast('请填写视频标题', 'error'); return; }
+    item = {
+      title,
+      url: document.getElementById('f_url').value.trim(),
+      desc: document.getElementById('f_desc').value.trim()
+    };
+  } else if (section === 'art') {
+    const title = document.getElementById('f_title').value.trim();
+    if (!title) { showToast('请填写作品名称', 'error'); return; }
+    item = {
+      title,
+      image: tempImage || (isEdit ? DATA[section][editIndex].image : ''),
+      tool: document.getElementById('f_tool').value.trim(),
+      style: document.getElementById('f_style').value.trim(),
+      prompt: document.getElementById('f_prompt').value.trim()
+    };
+  } else if (section === 'projects') {
+    const title = document.getElementById('f_title').value.trim();
+    if (!title) { showToast('请填写项目名称', 'error'); return; }
+    item = {
+      title,
+      status: document.getElementById('f_status').value,
+      genre: document.getElementById('f_genre').value.trim(),
+      content: document.getElementById('f_content').value.trim(),
+      date: document.getElementById('f_date').value
+    };
+  }
+
+  if (isEdit) {
+    DATA[section][editIndex] = item;
+  } else {
+    DATA[section].unshift(item);
+  }
+
+  saveData(DATA);
+  renderAll();
+  closeModal();
+  showToast(isEdit ? '已更新' : '已添加', 'success');
+}
+
+function editItem(section, idx) {
+  openModal(section, idx);
+}
+
+// ===== Delete =====
+let deleteTarget = { section: '', idx: -1 };
+
+function confirmDelete(section, idx) {
+  deleteTarget = { section, idx };
+  const names = { games: '游戏', analysis: '分析', videos: '视频', art: '素材', projects: '立项' };
+  const item = DATA[section][idx];
+  const name = item.name || item.title || '';
+  document.getElementById('confirmText').textContent = `确定删除「${name}」？此操作不可撤销。`;
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  if (deleteTarget.section && deleteTarget.idx >= 0) {
+    DATA[deleteTarget.section].splice(deleteTarget.idx, 1);
+    saveData(DATA);
+    renderAll();
+    showToast('已删除', 'info');
+  }
+  closeConfirm();
+});
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('active');
+  deleteTarget = { section: '', idx: -1 };
+}
+
+// ===== Lightbox =====
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+// ===== Utility =====
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ===== Close modal on overlay click =====
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+document.getElementById('confirmOverlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeConfirm();
+});
+
+// ===== Keyboard =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeConfirm();
+    closeLightbox();
+  }
+});
+
+// ===== Init =====
+renderAll();
+</script>
+</body>
+</html>
